@@ -1,9 +1,9 @@
-import {toVector} from './vector';
+import {toVector, Point} from './vector';
 import Ray from './ray';
 import Color from './color';
 
 export default class Space {
-    constructor({screen, eye, things}) {
+    constructor({screen, eye: Point, things}) {
         this.things = things || [];
         this.screen = screen || [{x: 0, y: 0, z: 0}, {x: 600, y: 0, z: 600}];
         this.eye = eye || {x: 100, y: -1014, z: 100};
