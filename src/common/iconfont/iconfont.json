@@ -1,0 +1,23 @@
+{
+  "id": "2327416",
+  "name": "ray-tracking",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "10773585",
+      "name": "Ball",
+      "font_class": "Ball",
+      "unicode": "ee2d",
+      "unicode_decimal": 60973
+    },
+    {
+      "icon_id": "16324264",
+      "name": "triangle-24",
+      "font_class": "arrow-left",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    }
+  ]
+}
