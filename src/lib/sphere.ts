@@ -1,24 +1,26 @@
 import Thing from './thing';
 import {
+    Vector, Point,
     dotProduct, toVector, subtract,
     vectorLength, multiply, plus, normalVector
-} from "./vector";
-import Ray from "./ray";
+} from './vector';
+import Color from './color';
+import Ray from './ray';
 
-export default class Sphere extends Thing {
-    constructor(center, radius, color, isLight) {
-        super();
+export default class Sphere implements Thing {
+    center: Point;
+    radius: number;
+    color: Color;
+    isLight: boolean;
+
+    constructor(center: Point, radius: number, color: Color, isLight: boolean) {
         this.center = center;
         this.radius = radius;
         this.color = color;
         this.isLight = isLight;
     }
 
-    isCross(ray) {
-        if (!(ray instanceof Ray)) {
-            throw new Error('light is not a Light');
-        }
-
+    isCross(ray: Ray) {
         const {point: p, vector: v} = ray;
         const vpc = toVector(this.center, p);
 
@@ -51,10 +53,7 @@ export default class Sphere extends Thing {
         }
     }
 
-    traceLine(ray, crossPoint) {
-        if (!(ray instanceof Ray)) {
-            throw new Error('light is not x1 Light');
-        }
+    traceLine(ray: Ray, crossPoint: Point) {
         const vcc = normalVector(toVector(this.center, crossPoint));
         const len = dotProduct(ray.vector, vcc);
         const projectV = multiply(vcc, len * 2);

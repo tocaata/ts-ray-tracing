@@ -1,6 +1,6 @@
 import Triangle from './triangle';
 import Sphere from './sphere';
-import Color from "./color";
+import Color from './color';
 
 export default {
     room: [

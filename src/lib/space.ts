@@ -1,9 +1,16 @@
-import {toVector, Point} from './vector';
 import Ray from './ray';
+import Thing from './thing';
 import Color from './color';
+import {toVector, Point} from './vector';
 
 export default class Space {
-    constructor({screen, eye: Point, things}) {
+    things: Thing[];
+    screen: [Point, Point];
+    eye: Point;
+    background: Color;
+    maxJump: number;
+
+    constructor({screen, eye, things}: {screen: [Point, Point], eye: Point, things: Thing[]}) {
         this.things = things || [];
         this.screen = screen || [{x: 0, y: 0, z: 0}, {x: 600, y: 0, z: 600}];
         this.eye = eye || {x: 100, y: -1014, z: 100};
@@ -11,20 +18,16 @@ export default class Space {
         this.maxJump = 5;
     }
 
-    setScreen(screen) {
+    setScreen(screen: [Point, Point]): void {
         this.screen = screen;
     }
 
-    setEye(eye) {
+    setEye(eye: Point): void {
         this.eye = eye;
     }
 
-    add(type, ...items) {
-        if (!['lights', 'things'].includes(type)) {
-            console.log('error type');
-        }
-
-        this[type].push(...items);
+    add(type: string, ...items: Thing[]): void {
+        this.things.push(...items);
     }
 
     render() {

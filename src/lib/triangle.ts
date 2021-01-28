@@ -1,8 +1,20 @@
 import Ray from './ray';
 import Thing from './thing';
-import {toVector, crossProduct, dotProduct, normalVector, vectorLength, multiply, subtract, plus} from './vector';
+import {
+    Point,
+    toVector,
+    crossProduct,
+    dotProduct,
+    normalVector,
+    vectorLength,
+    multiply,
+    subtract,
+    plus,
+    Vector
+} from './vector';
+import Color from "./color";
 
-function pInTriangle(p, pa, pb, pc) {
+function pInTriangle(p: Point, pa: Point, pb: Point, pc: Point) {
     const v0 = toVector(pa, pc), v1 = toVector(pa, pb), v2 = toVector(pa, p);
     const d0 = dotProduct(v0, v0);
     const d1 = dotProduct(v0, v1);
@@ -17,9 +29,14 @@ function pInTriangle(p, pa, pb, pc) {
     return u >= 0 && v >= 0 && u + v <= 1
 }
 
-export default class Triangle extends Thing {
-    constructor(pointA, pointB, pointC, color, isLight) {
-        super();
+export default class Triangle implements Thing {
+    points: [Point, Point, Point];
+    vectors: [Vector, Vector, Vector];
+    plane: {a: number, b: number, c: number, d: number};
+    color: Color;
+    isLight: boolean;
+
+    constructor(pointA: Point, pointB: Point, pointC: Point, color: Color, isLight: boolean) {
         this.points = [pointA, pointB, pointC];
         this.vectors = [
             normalVector(toVector(pointA, pointB)),
@@ -42,11 +59,11 @@ export default class Triangle extends Thing {
         return {a, b, c, d};
     }
 
-    isCross(ray) {
-        if (!(ray instanceof Ray)) {
-            throw new Error('light is not a Light');
-        }
-
+    isCross(ray: Ray): {
+        isCross: boolean,
+        dist: number,
+        cross: Vector | null
+    } {
         const {a, b, c, d} = this.plane;
         const {x: x0, y: y0, z: z0} = ray.point;
         const {x: x1, y: y1, z: z1} = ray.vector;
@@ -71,10 +88,7 @@ export default class Triangle extends Thing {
         };
     }
 
-    traceLine(ray, crossPoint) {
-        if (!(ray instanceof Ray)) {
-            throw new Error('light is not x1 Light');
-        }
+    traceLine(ray: Ray, crossPoint: Point) {
         const {a, b, c} = this.plane;
         const vcc = normalVector({x: a, y: b, z: c});
         const len = dotProduct(ray.vector, vcc);

@@ -1,8 +1,5 @@
 import React from 'react';
 import Space from '../../lib/space';
-import Color from '../../lib/color';
-import Sphere from '../../lib/sphere';
-import Triangle from '../../lib/triangle';
 import things from '../../lib/things';
 import Panel from '../../components/panel';
 
