@@ -29,7 +29,7 @@ export default class Sphere implements Thing {
         if (d > 0) {
             const sqrtD = Math.sqrt(d);
             const n1 = (-b + sqrtD) / a / 2, n2 = (-b - sqrtD) / a / 2;
-            let n;
+            let n: number;
             if (n1 * n2 < 0) {
                 n = n1 > 0 ? n1 : n2;
             } else if (n1 > 0 && n2 > 0) {

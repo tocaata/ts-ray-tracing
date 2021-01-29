@@ -48,7 +48,7 @@ export default class Triangle implements Thing {
         this.isLight = isLight;
     }
 
-    computePlane() {
+    computePlane(): {a: number, b: number, c: number, d: number} {
         const pointA = this.points[0];
         const [v1, v2] = this.vectors;
 
@@ -59,11 +59,7 @@ export default class Triangle implements Thing {
         return {a, b, c, d};
     }
 
-    isCross(ray: Ray): {
-        isCross: boolean,
-        dist: number,
-        cross: Vector | null
-    } {
+    isCross(ray: Ray) {
         const {a, b, c, d} = this.plane;
         const {x: x0, y: y0, z: z0} = ray.point;
         const {x: x1, y: y1, z: z1} = ray.vector;

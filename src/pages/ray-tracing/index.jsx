@@ -13,7 +13,7 @@ export default class RayTracing extends React.Component {
 
     componentDidMount() {
         const ctx = this.canvas.getContext('2d');
-        const spaceWidth = 1200, spaceHeight = 1200;
+        const spaceWidth = 2000, spaceHeight = 2000;
         const imgData = ctx.createImageData(spaceWidth + 1, spaceHeight + 1);
         this.space = new Space({
             screen:[{x: 0, y: 0, z: 0}, {x: spaceWidth, y: 0, z: spaceHeight}],
