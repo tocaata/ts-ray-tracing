@@ -1,5 +1,5 @@
 import Color from './color';
-import {normalVector, Vector, Point} from './vector';
+import {normalize, Vector, Point} from './vector';
 
 export default class Ray {
     point: Point;
@@ -8,7 +8,7 @@ export default class Ray {
 
     constructor(startPoint: Point, vector: Vector, color: Color) {
         this.point = startPoint;
-        this.vector = normalVector(vector);
+        this.vector = normalize(vector);
         this.color = color;
     }
 }

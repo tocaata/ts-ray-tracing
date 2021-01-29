@@ -2,9 +2,9 @@ import Ray from './ray';
 import {
     Point,
     toVector,
-    crossProduct,
-    dotProduct,
-    normalVector,
+    cross,
+    dot,
+    normalize,
     vectorLength,
     multiply,
     subtract,
@@ -25,9 +25,9 @@ export default class DiffuseTriangle extends Triangle {
 
     traceLine(ray: Ray, crossPoint: Point) {
         const {a, b, c} = this.plane;
-        const vCenterToCross = normalVector({x: a, y: b, z: c});
-        const diffuseVcc = normalVector(plus(vCenterToCross, multiply(randomUnitSpherePoint(), this.diffUse)));
-        const len = dotProduct(ray.vector, diffuseVcc);
+        const vCenterToCross = normalize({x: a, y: b, z: c});
+        const diffuseVcc = normalize(plus(vCenterToCross, multiply(randomUnitSpherePoint(), this.diffUse)));
+        const len = dot(ray.vector, diffuseVcc);
         const projectV = multiply(diffuseVcc, len);
         const assistV = subtract(ray.vector, multiply(projectV, 2));
         return [new Ray(crossPoint, assistV, this.color)];

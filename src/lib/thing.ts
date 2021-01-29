@@ -6,10 +6,10 @@ export default interface Thing {
     isLight: boolean;
     color: Color;
 
-    isCross(ray: Ray): {
-        isCross: boolean,
+    hit(ray: Ray): {
+        isHit: boolean,
         dist: number,
-        cross: Point | null
+        hitPoint: Point | null
     };
 
     traceLine(ray: Ray, crossPoint: Point): Ray[];

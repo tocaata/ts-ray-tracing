@@ -132,6 +132,18 @@ export default {
             100,
             new Color(0.3, 1, 1, 1),
             true
+        ),
+        new Sphere(
+            {x: 1150, y: 250, z: 1370},
+            70,
+            new Color(1, 0.8, 1, 1),
+            true
+        ),
+        new Sphere(
+            {x: 1250, y: 350, z: 1570},
+            70,
+            new Color(1, 1, 0.4, 1),
+            true
         )
     ]
 };

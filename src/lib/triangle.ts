@@ -3,9 +3,9 @@ import Thing from './thing';
 import {
     Point,
     toVector,
-    crossProduct,
-    dotProduct,
-    normalVector,
+    cross,
+    dot,
+    normalize,
     vectorLength,
     multiply,
     subtract,
@@ -16,11 +16,11 @@ import Color from "./color";
 
 function pInTriangle(p: Point, pa: Point, pb: Point, pc: Point) {
     const v0 = toVector(pa, pc), v1 = toVector(pa, pb), v2 = toVector(pa, p);
-    const d0 = dotProduct(v0, v0);
-    const d1 = dotProduct(v0, v1);
-    const d2 = dotProduct(v0, v2);
-    const d3 = dotProduct(v1, v1);
-    const d4 = dotProduct(v1, v2);
+    const d0 = dot(v0, v0);
+    const d1 = dot(v0, v1);
+    const d2 = dot(v0, v2);
+    const d3 = dot(v1, v1);
+    const d4 = dot(v1, v2);
 
     const denom = d0 * d3 - d1 * d1;
     const u = (d3 * d2 - d1 * d4) / denom;
@@ -39,9 +39,9 @@ export default class Triangle implements Thing {
     constructor(pointA: Point, pointB: Point, pointC: Point, color: Color, isLight: boolean) {
         this.points = [pointA, pointB, pointC];
         this.vectors = [
-            normalVector(toVector(pointA, pointB)),
-            normalVector(toVector(pointB, pointC)),
-            normalVector(toVector(pointC, pointA))
+            normalize(toVector(pointA, pointB)),
+            normalize(toVector(pointB, pointC)),
+            normalize(toVector(pointC, pointA))
         ];
         this.plane = this.computePlane();
         this.color = color;
@@ -52,42 +52,42 @@ export default class Triangle implements Thing {
         const pointA = this.points[0];
         const [v1, v2] = this.vectors;
 
-        const {x: a, y: b, z: c} = normalVector(crossProduct(v1, v2));
+        const {x: a, y: b, z: c} = normalize(cross(v1, v2));
         const d = -a * pointA.x - b * pointA.y - c * pointA.z;
 
         // a*x + b*y + c*z + d = 0
         return {a, b, c, d};
     }
 
-    isCross(ray: Ray) {
+    hit(ray: Ray) {
         const {a, b, c, d} = this.plane;
         const {x: x0, y: y0, z: z0} = ray.point;
         const {x: x1, y: y1, z: z1} = ray.vector;
         const mul = -(d + a * x0 + b * y0 + c * z0) / (a * x1 + b * y1 + c * z1);
         if (mul < 0) {
             return {
-                isCross: false,
+                isHit: false,
                 dist: 0,
-                cross: null
+                hitPoint: null
             };
         }
 
         const addV = multiply(ray.vector, mul);
-        const cross = plus(ray.point, addV);
+        const hitPoint = plus(ray.point, addV);
         const distance = vectorLength(addV);
         const [p0, p1, p2] = this.points;
 
         return {
-            isCross: pInTriangle(cross, p0, p1, p2),
+            isHit: pInTriangle(hitPoint, p0, p1, p2),
             dist: distance,
-            cross
+            hitPoint
         };
     }
 
     traceLine(ray: Ray, crossPoint: Point) {
         const {a, b, c} = this.plane;
-        const vcc = normalVector({x: a, y: b, z: c});
-        const len = dotProduct(ray.vector, vcc);
+        const vcc = normalize({x: a, y: b, z: c});
+        const len = dot(ray.vector, vcc);
         const projectV = multiply(vcc, len);
         const assistV = subtract(ray.vector, multiply(projectV, 2));
         return [new Ray(crossPoint, assistV, this.color)];

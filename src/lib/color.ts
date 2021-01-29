@@ -18,4 +18,12 @@ export default class Color {
     toImageData(): number[] {
         return [Math.round(this.r * 255), Math.round(this.g * 255), Math.round(this.b * 255), Math.round(this.a * 255)];
     }
+
+    static multiply(c: Color, multiplier: number): Color {
+        return new Color(c.r * multiplier, c.g * multiplier, c.a * multiplier, c.a);
+    }
+
+    static add(c1: Color, c2: Color): Color {
+        return new Color(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b, 1);
+    }
 }

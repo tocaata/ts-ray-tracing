@@ -3,6 +3,9 @@ import Thing from './thing';
 import Color from './color';
 import {toVector, Point, Vector} from './vector';
 
+const SKY_COLOR = Color.multiply(new Color(0.5, 0.7, 1.0, 1.0), 0.6);
+const LAND_COLOR = new Color(1,1, 1, 1);
+
 export default class Space {
     things: Thing[];
     screen: [Point, Point];
@@ -13,7 +16,7 @@ export default class Space {
     constructor({screen, eye, things, background}: {screen: [Point, Point], eye: Point, things: Thing[], background: Color}) {
         this.things = things || [];
         this.screen = screen || [{x: 0, y: 0, z: 0}, {x: 600, y: 0, z: 600}];
-        this.eye = eye || {x: 100, y: -10000, z: 100};
+        this.eye = eye || {x: 100, y: -5000, z: 100};
         this.background = background || new Color(0.7, 0.7, 0.7, 1);
         this.maxJump = 5;
     }
@@ -47,16 +50,18 @@ export default class Space {
                 let lastThing: Thing | null = null;
                 while(rays.length > 0 && jump < maxJump) {
                     const ray: Ray = <Ray>rays.pop();
-                    let shortD: number = Number.MAX_VALUE, shortC: Vector | null = null, shortT: Thing | null = null;
-                    for (let th of this.things) {
-                        if (th === lastThing) {
+                    let hitDistance: number = Number.MAX_VALUE;
+                    let hitCross: Vector | null = null;
+                    let hitThing: Thing | null = null;
+                    for (let thing of this.things) {
+                        if (thing === lastThing) {
                             continue;
                         }
-                        const {isCross, dist, cross}: {isCross: boolean, dist: number, cross: Point | null} = th.isCross(ray);
-                        if (isCross && dist < shortD) {
-                            shortD = dist;
-                            shortC = cross;
-                            shortT = th;
+                        const {isHit, dist, hitPoint}: {isHit: boolean, dist: number, hitPoint: Point | null} = thing.hit(ray);
+                        if (isHit && dist < hitDistance) {
+                            hitDistance = dist;
+                            hitCross = hitPoint;
+                            hitThing = thing;
                         }
                     }
 
@@ -74,19 +79,19 @@ export default class Space {
                     //     console.log(shortT);
                     // }
 
-                    lastThing = shortT;
-                    if (shortT && shortC && shortT) {
-                        if (shortT.isLight) {
+                    lastThing = hitThing;
+                    if (hitThing && hitCross && hitThing) {
+                        if (hitThing.isLight) {
                             // if (jump !== 0 && jump !== 5) {
                             //     console.log('isLight');
                             // }
-                            const tempColor = colorMask.mask(shortT.color);
+                            const tempColor = colorMask.mask(hitThing.color);
                             imageData.push(...tempColor.toImageData());
                             break;
                         } else {
                             jump++;
-                            colorMask = colorMask.mask(shortT.color);
-                            rays.push(...shortT.traceLine(ray, shortC));
+                            colorMask = colorMask.mask(hitThing.color);
+                            rays.push(...hitThing.traceLine(ray, hitCross));
                             // if (count % 500 === 0) {
                             //     console.log(lights.length);
                             // }
@@ -99,7 +104,9 @@ export default class Space {
                         // if (jump !== 0) {
                         //     console.log(jump);
                         // }
-                        imageData.push(...colorMask.mask(this.background).toImageData());
+                        const h = ray.vector.z;
+                        const airColor = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
+                        imageData.push(...colorMask.mask(airColor).toImageData());
                         break;
                     }
                 }
