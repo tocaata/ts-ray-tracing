@@ -32,12 +32,24 @@ export function multiply(v: Vector, num: number): Vector {
     return {x: v.x * num, y: v.y * num, z: v.z * num};
 }
 
-export function plus(v1: Vector, v2: Vector): Vector {
-    return {x: v1.x + v2.x, y: v1.y + v2.y, z: v1.z + v2.z};
+export function add(v1: Vector, ...vOther: Vector[]): Vector {
+    const vSum: Vector = {...v1};
+    for (const cur of vOther) {
+        vSum.x += cur.x;
+        vSum.y += cur.y;
+        vSum.z += cur.z;
+    }
+    return vSum;
 }
 
-export function subtract(v1: Vector, v2: Vector): Vector {
-    return {x: v1.x - v2.x, y: v1.y - v2.y, z: v1.z - v2.z};
+export function subtract(v1: Vector, ...vOther: Vector[]): Vector {
+    const vSum: Vector = {...v1};
+    for (const cur of vOther) {
+        vSum.x -= cur.x;
+        vSum.y -= cur.y;
+        vSum.z -= cur.z;
+    }
+    return vSum;
 }
 
 export function toVector(p1: Point, p2: Point): Vector {
@@ -51,3 +63,14 @@ export function toVector(p1: Point, p2: Point): Vector {
 export function vectorLength(v1: Vector): number {
     return Math.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
 }
+
+export default {
+    normalize,
+    dot,
+    cross,
+    multiply,
+    add,
+    subtract,
+    toVector,
+    vectorLength
+};

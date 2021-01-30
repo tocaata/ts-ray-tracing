@@ -8,7 +8,7 @@ import {
     vectorLength,
     multiply,
     subtract,
-    plus,
+    add,
     Vector
 } from './vector';
 import {randomUnitSpherePoint} from './helper';
@@ -26,7 +26,7 @@ export default class DiffuseTriangle extends Triangle {
     traceLine(ray: Ray, crossPoint: Point) {
         const {a, b, c} = this.plane;
         const vCenterToCross = normalize({x: a, y: b, z: c});
-        const diffuseVcc = normalize(plus(vCenterToCross, multiply(randomUnitSpherePoint(), this.diffUse)));
+        const diffuseVcc = normalize(add(vCenterToCross, multiply(randomUnitSpherePoint(), this.diffUse)));
         const len = dot(ray.vector, diffuseVcc);
         const projectV = multiply(diffuseVcc, len);
         const assistV = subtract(ray.vector, multiply(projectV, 2));

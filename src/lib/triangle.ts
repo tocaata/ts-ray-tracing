@@ -9,7 +9,7 @@ import {
     vectorLength,
     multiply,
     subtract,
-    plus,
+    add,
     Vector
 } from './vector';
 import Color from "./color";
@@ -73,7 +73,7 @@ export default class Triangle implements Thing {
         }
 
         const addV = multiply(ray.vector, mul);
-        const hitPoint = plus(ray.point, addV);
+        const hitPoint = add(ray.point, addV);
         const distance = vectorLength(addV);
         const [p0, p1, p2] = this.points;
 

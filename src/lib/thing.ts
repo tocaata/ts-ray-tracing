@@ -1,6 +1,6 @@
 import Ray from './ray';
 import Color from './color';
-import {plus, Point, Vector, vectorLength} from './vector';
+import {add, Point, Vector, vectorLength} from './vector';
 
 export default interface Thing {
     isLight: boolean;

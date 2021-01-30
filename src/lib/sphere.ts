@@ -2,7 +2,7 @@ import Thing from './thing';
 import {
     Vector, Point,
     dot, toVector, subtract,
-    vectorLength, multiply, plus, normalize
+    vectorLength, multiply, add, normalize
 } from './vector';
 import Color from './color';
 import Ray from './ray';
@@ -42,7 +42,7 @@ export default class Sphere implements Thing {
             return {
                 isHit: true,
                 dist: vectorLength(addV),
-                hitPoint: plus(p, addV)
+                hitPoint: add(p, addV)
             };
         } else {
             return {

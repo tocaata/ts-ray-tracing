@@ -1,7 +1,7 @@
 import Sphere from './sphere';
 import {
     Point, dot, toVector, subtract,
-    multiply, plus, normalize
+    multiply, add, normalize
 } from './vector';
 import {randomUnitSpherePoint} from './helper';
 import Color from './color';
@@ -17,7 +17,7 @@ export default class DiffuseSphere extends Sphere {
 
     traceLine(ray: Ray, crossPoint: Point) {
         const vCenterToCross = normalize(toVector(this.center, crossPoint));
-        const vRandAside = normalize(plus(vCenterToCross, multiply(randomUnitSpherePoint(), this.diffuse)));
+        const vRandAside = normalize(add(vCenterToCross, multiply(randomUnitSpherePoint(), this.diffuse)));
         const len = dot(ray.vector, vRandAside);
         const projectV = multiply(vRandAside, len * 2);
         const assistV = subtract(ray.vector, projectV);

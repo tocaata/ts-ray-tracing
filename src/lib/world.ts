@@ -1,32 +1,34 @@
 import Ray from './ray';
 import Thing from './thing';
 import Color from './color';
+import Camera from './camera';
 import {toVector, Point, Vector} from './vector';
 
 const SKY_COLOR = Color.multiply(new Color(0.5, 0.7, 1.0, 1.0), 0.6);
 const LAND_COLOR = new Color(1,1, 1, 1);
 
-export default class Space {
+interface WorldParams {
     things: Thing[];
-    screen: [Point, Point];
-    eye: Point;
     background: Color;
+    imageWidth: number;
+    imageHeight: number;
+}
+
+export default class World {
+    things: Thing[];
+    background: Color;
+    camera: Camera;
+    imageWidth: number;
+    imageHeight: number;
     maxJump: number;
 
-    constructor({screen, eye, things, background}: {screen: [Point, Point], eye: Point, things: Thing[], background: Color}) {
+    constructor({things, background, imageWidth, imageHeight}: WorldParams) {
         this.things = things || [];
-        this.screen = screen || [{x: 0, y: 0, z: 0}, {x: 600, y: 0, z: 600}];
-        this.eye = eye || {x: 100, y: -5000, z: 100};
         this.background = background || new Color(0.7, 0.7, 0.7, 1);
+        this.camera = new Camera({aspectRatio: imageWidth / imageHeight});
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
         this.maxJump = 5;
-    }
-
-    setScreen(screen: [Point, Point]): void {
-        this.screen = screen;
-    }
-
-    setEye(eye: Point): void {
-        this.eye = eye;
     }
 
     add(type: string, ...items: Thing[]): void {
@@ -36,13 +38,14 @@ export default class Space {
     render() {
         const maxJump: number = this.maxJump;
         const imageData: number[] = [];
-        const [{x: x0, z: z0}, {x: x1, z: z1}] = this.screen;
+
         let count: number = 0;
         const startTime: Date = new Date();
-        for (let z = z1; z >= z0; z-- ) {
-            for (let x = x0; x <= x1; x++) {
-                const sp: Point = {x, y: 0, z};
-                const rays: Ray[] = [new Ray(this.eye, toVector(this.eye, sp), new Color(1, 1, 1, 1))];
+        for (let z = this.imageHeight - 1; z >= 0; z--) {
+            for (let x = 0; x < this.imageWidth; x++) {
+                const u = x / (this.imageWidth - 1);
+                const v = z / (this.imageHeight - 1);
+                const rays: Ray[] = [this.camera.getRay(u, v)];
                 let colorMask: Color = new Color(1,1, 1, 1);
                 let jump: number = 0;
                 count ++;
@@ -96,14 +99,14 @@ export default class Space {
                             //     console.log(lights.length);
                             // }
                             if (jump >= this.maxJump) {
-                                imageData.push(...colorMask.mask(this.background).toImageData());
+                                const h = ray.vector.z;
+                                const airColor = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
+
+                                imageData.push(...colorMask.mask(airColor).toImageData());
                             }
                         }
                     } else {
-                        // 黑色点
-                        // if (jump !== 0) {
-                        //     console.log(jump);
-                        // }
+                        // no hit thing
                         const h = ray.vector.z;
                         const airColor = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
                         imageData.push(...colorMask.mask(airColor).toImageData());
