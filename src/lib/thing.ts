@@ -12,5 +12,5 @@ export default interface Thing {
         hitPoint: Point | null
     };
 
-    traceLine(ray: Ray, crossPoint: Point): Ray[];
+    traceLine(ray: Ray, hitPoint: Point): Ray;
 }

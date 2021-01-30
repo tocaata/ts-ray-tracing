@@ -53,11 +53,11 @@ export default class Sphere implements Thing {
         }
     }
 
-    traceLine(ray: Ray, crossPoint: Point) {
-        const vcc = normalize(toVector(this.center, crossPoint));
+    traceLine(ray: Ray, hitPoint: Point) {
+        const vcc = normalize(toVector(this.center, hitPoint));
         const len = dot(ray.vector, vcc);
         const projectV = multiply(vcc, len * 2);
         const assistV = subtract(ray.vector, projectV);
-        return [new Ray(crossPoint, assistV, this.color)];
+        return new Ray(hitPoint, assistV, this.color);
     }
 }

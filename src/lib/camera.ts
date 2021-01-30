@@ -7,7 +7,7 @@ interface CameraParams {
     aspectRatio?: number
 }
 
-const ZERO_POINT = {x: 0, y: 0, z: 0};
+const ZERO_POINT = {x: 0, y: -100, z: 0};
 const DEFAULT_ASPECT_RATIO = 16 / 9;
 const VIEWPORT_HEIGHT = 36;
 const FOCAL_LENGTH = -VIEWPORT_HEIGHT / 2;

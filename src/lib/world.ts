@@ -35,6 +35,27 @@ export default class World {
         this.things.push(...items);
     }
 
+    findHitThing(ray: Ray, prevThing: Thing | null): {hitThing: Thing | null, hitPoint: Point | null} {
+        let hitDistance: number = Number.MAX_VALUE;
+        let hitPoint: Point | null = null;
+        let hitThing: Thing | null = null;
+
+        // Get the ray hit object.
+        for (let thing of this.things) {
+            if (thing === prevThing) {
+                continue;
+            }
+            const {isHit, dist, hitPoint: hitP}: {isHit: boolean, dist: number, hitPoint: Point | null} = thing.hit(ray);
+            if (isHit && dist < hitDistance) {
+                hitDistance = dist;
+                hitPoint = hitP;
+                hitThing = thing;
+            }
+        }
+
+        return {hitThing, hitPoint};
+    }
+
     render() {
         const maxJump: number = this.maxJump;
         const imageData: number[] = [];
@@ -45,73 +66,46 @@ export default class World {
             for (let x = 0; x < this.imageWidth; x++) {
                 const u = x / (this.imageWidth - 1);
                 const v = z / (this.imageHeight - 1);
-                const rays: Ray[] = [this.camera.getRay(u, v)];
                 let colorMask: Color = new Color(1,1, 1, 1);
                 let jump: number = 0;
                 count ++;
 
-                let lastThing: Thing | null = null;
-                while(rays.length > 0 && jump < maxJump) {
-                    const ray: Ray = <Ray>rays.pop();
-                    let hitDistance: number = Number.MAX_VALUE;
-                    let hitCross: Vector | null = null;
-                    let hitThing: Thing | null = null;
-                    for (let thing of this.things) {
-                        if (thing === lastThing) {
-                            continue;
-                        }
-                        const {isHit, dist, hitPoint}: {isHit: boolean, dist: number, hitPoint: Point | null} = thing.hit(ray);
-                        if (isHit && dist < hitDistance) {
-                            hitDistance = dist;
-                            hitCross = hitPoint;
-                            hitThing = thing;
-                        }
-                    }
+                let prevThing: Thing | null = null;
+                let ray: Ray = this.camera.getRay(u, v);
+                let hitThing: Thing | null = null;
+                let hitPoint: Point | null = null;
 
-                    // jump !== 0 && shortT == null && console.log(shortT);
+                do {
+                    const hitObj = this.findHitThing(ray, prevThing);
+                    hitThing = hitObj.hitThing;
+                    hitPoint = hitObj.hitPoint;
+                    prevThing = hitThing;
 
-                    // if (jump === 1 && shortT == null) {
-                    //     console.log(jump);
-                    // }
-                    //
-                    // if (count % 1000 === 0) {
-                    //     console.log(jump);
-                    // }
-                    //
-                    // if (jump === 2 && shortT == null) {
-                    //     console.log(shortT);
-                    // }
-
-                    lastThing = hitThing;
-                    if (hitThing && hitCross && hitThing) {
+                    if (hitThing && hitPoint) {
                         if (hitThing.isLight) {
                             // if (jump !== 0 && jump !== 5) {
                             //     console.log('isLight');
                             // }
-                            const tempColor = colorMask.mask(hitThing.color);
-                            imageData.push(...tempColor.toImageData());
                             break;
                         } else {
                             jump++;
                             colorMask = colorMask.mask(hitThing.color);
-                            rays.push(...hitThing.traceLine(ray, hitCross));
+                            ray = hitThing.traceLine(ray, hitPoint);
                             // if (count % 500 === 0) {
                             //     console.log(lights.length);
                             // }
-                            if (jump >= this.maxJump) {
-                                const h = ray.vector.z;
-                                const airColor = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
-
-                                imageData.push(...colorMask.mask(airColor).toImageData());
-                            }
                         }
-                    } else {
-                        // no hit thing
-                        const h = ray.vector.z;
-                        const airColor = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
-                        imageData.push(...colorMask.mask(airColor).toImageData());
-                        break;
                     }
+                } while(ray && jump < maxJump && hitThing);
+
+                if (jump >= this.maxJump || hitThing === null) {
+                    const h = ray.vector.z;
+                    const airColor = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
+                    imageData.push(...colorMask.mask(airColor).toImageData());
+                } else {
+                    // hit thing is light
+                    const tempColor = colorMask.mask(hitThing.color);
+                    imageData.push(...tempColor.toImageData());
                 }
                 // if (jump !== 5 && jump !== 1) {
                 //     console.log('jump', jump);

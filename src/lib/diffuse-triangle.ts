@@ -30,6 +30,6 @@ export default class DiffuseTriangle extends Triangle {
         const len = dot(ray.vector, diffuseVcc);
         const projectV = multiply(diffuseVcc, len);
         const assistV = subtract(ray.vector, multiply(projectV, 2));
-        return [new Ray(crossPoint, assistV, this.color)];
+        return new Ray(crossPoint, assistV, this.color);
     }
 }

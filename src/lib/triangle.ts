@@ -84,12 +84,12 @@ export default class Triangle implements Thing {
         };
     }
 
-    traceLine(ray: Ray, crossPoint: Point) {
+    traceLine(ray: Ray, hitPoint: Point) {
         const {a, b, c} = this.plane;
         const vcc = normalize({x: a, y: b, z: c});
         const len = dot(ray.vector, vcc);
         const projectV = multiply(vcc, len);
         const assistV = subtract(ray.vector, multiply(projectV, 2));
-        return [new Ray(crossPoint, assistV, this.color)];
+        return new Ray(hitPoint, assistV, this.color);
     }
 }

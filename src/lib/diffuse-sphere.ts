@@ -21,6 +21,6 @@ export default class DiffuseSphere extends Sphere {
         const len = dot(ray.vector, vRandAside);
         const projectV = multiply(vRandAside, len * 2);
         const assistV = subtract(ray.vector, projectV);
-        return [new Ray(crossPoint, assistV, this.color)];
+        return new Ray(crossPoint, assistV, this.color);
     }
 }

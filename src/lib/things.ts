@@ -96,13 +96,13 @@ export default {
         new DiffuseSphere(
             {x: -200, y: 300, z: 0},
             60,
-            0.3,
+            0.5,
             new Color(0.5, 0.5, 0.5, 1),
             false
         ),
         new DiffuseSphere(
-            {x: 0, y: 300, z: -8070},
-            8000,
+            {x: 0, y: 300, z: -60060},
+            60000,
             0.7,
             new Color(0.2, 0.6, 0.2, 1),
             false
