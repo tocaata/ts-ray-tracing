@@ -3,7 +3,10 @@ import Thing from './thing';
 import Color from './color';
 import Camera from './camera';
 import {Point} from './vector';
-import workerPool from 'workerpool';
+// @ts-ignore
+import * as Parallel from 'paralleljs';
+
+// const Parallel: any = require('paralleljs')
 
 const SKY_COLOR = Color.multiply(new Color(0.5, 0.7, 1.0, 1.0), 1);
 const LAND_COLOR = new Color(1,1, 1, 1);
@@ -30,7 +33,7 @@ export default class World {
         this.camera = new Camera({aspectRatio: imageWidth / imageHeight});
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
-        this.maxJump = 3;
+        this.maxJump = 4;
         this.threadCount = 6;
     }
 
@@ -98,30 +101,31 @@ export default class World {
         }
     }
 
+    renderWithThread() {
+        let count: number = 0;
+        const startTime: Date = new Date();
+
+        const taskData: {from: number, to: number}[] = [];
+        for (let thread = 0; thread < this.threadCount; thread++) {
+            const from: number = thread * this.imageHeight / this.threadCount;
+            const to: number = (thread + 1) * this.imageHeight / this.threadCount;
+            taskData.push({from, to: to < this.imageHeight ? to : this.imageHeight});
+        }
+
+        const task = new Parallel(taskData);
+
+        task.map((scope: any) => {
+            return World.renderTask(this, scope.from, scope.to);
+        }).then((data: any[]) => {
+            console.log(data.length);
+        });
+    }
+
     render() {
         const imageData: number[] = [];
 
         let count: number = 0;
         const startTime: Date = new Date();
-        // for (let thread = 0; thread < this.threadCount; thread++) {
-        //     for (let z = this.imageHeight - 1; z >= 0; z--) {
-        //         for (let x = 0; x < this.imageWidth; x++) {
-        //             const colors: Color[] = [];
-        //             for (let rand = 0; rand < 5; rand++) {
-        //                 const row = z + Math.random() - 0.5;
-        //                 const col = x + Math.random() - 0.5;
-        //                 const tempColor = this.tracePixel(row, col);
-        //                 colors.push(tempColor);
-        //                 // imageData.push(...pixelColor.toImageData());
-        //             }
-        //
-        //             const pixelColor = Color.average(...colors);
-        //             imageData.push(...pixelColor.toImageData());
-        //             // const pixelColor = this.tracePixel(z, x);
-        //             // imageData.push(...pixelColor.toImageData());
-        //         }
-        //     }
-        // }
         for (let z = this.imageHeight - 1; z >= 0; z--) {
             for (let x = 0; x < this.imageWidth; x++) {
                 const colors: Color[] = [];
@@ -141,6 +145,26 @@ export default class World {
         }
         console.log(count, `Spend Time: ${(new Date().valueOf() - startTime.valueOf()) / 1000}s`);
 
+        return imageData;
+    }
+
+    static renderTask(world: World, rowFrom: number, rowTo: number) {
+        const imageData: number[] = [];
+
+        for (let z = rowFrom; z < rowTo; z++) {
+            for (let x = 0; x < world.imageWidth; x++) {
+                const colors: Color[] = [];
+                for (let rand = 0; rand < 5; rand++) {
+                    const row = z + Math.random() - 0.5;
+                    const col = x + Math.random() - 0.5;
+                    const tempColor = world.tracePixel(row, col);
+                    colors.push(tempColor);
+                }
+
+                const pixelColor = Color.average(...colors);
+                imageData.push(...pixelColor.toImageData());
+            }
+        }
         return imageData;
     }
 }

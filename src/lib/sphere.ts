@@ -1,7 +1,6 @@
 import Thing from './thing';
 import {
-    Vector, Point,
-    dot, toVector, subtract,
+    Point, dot, toVector, subtract,
     vectorLength, multiply, add, normalize
 } from './vector';
 import Color from './color';
@@ -26,7 +25,7 @@ export default class Sphere implements Thing {
 
         const a = dot(v, v), b = 2 * dot(vpc, v), c = dot(vpc, vpc) - this.radius * this.radius;
         const d = b * b - 4 * a * c;
-        if (d > 0) {
+        if (d >= 0) {
             const sqrtD = Math.sqrt(d);
             const n1 = (-b + sqrtD) / a / 2, n2 = (-b - sqrtD) / a / 2;
             let n: number;
