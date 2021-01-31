@@ -112,13 +112,20 @@ export default class World {
             taskData.push({from, to: to < this.imageHeight ? to : this.imageHeight});
         }
 
-        const task = new Parallel(taskData);
-
-        task.map((scope: any) => {
-            return World.renderTask(this, scope.from, scope.to);
-        }).then((data: any[]) => {
-            console.log(data.length);
+        const task = new Parallel(taskData, {
+            env: {
+                world: this
+            }
         });
+        // task.require(renderTask);
+        task.map((range: any) => {
+            // @ts-ignore
+            console.log(JSON.stringify(range), global.env.world);
+            // @ts-ignore
+            return renderTask(global.env.world, range.from, range.to);
+        }); //.then((data: any[]) => {
+            // console.log(data.length);
+        // });
     }
 
     render() {

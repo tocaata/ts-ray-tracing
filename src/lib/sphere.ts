@@ -1,6 +1,7 @@
 import Thing from './thing';
 import {
-    Point, dot, toVector, subtract,
+    Vector, Point,
+    dot, toVector, subtract,
     vectorLength, multiply, add, normalize
 } from './vector';
 import Color from './color';

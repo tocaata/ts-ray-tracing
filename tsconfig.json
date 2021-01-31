@@ -1,15 +1,27 @@
-// tsconfig.json
 {
   "compilerOptions": {
-    // this aligns with Vue's browser support
     "target": "es2015",
-    // this enables stricter inference for data properties on `this`
     "strict": true,
-    // if using webpack 2+ or rollup, to leverage tree shaking:
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "isolatedModules": true,
-    "esModuleInterop": true
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
   },
-  "noImplicitAny": false
+  "noImplicitAny": false,
+  "include": [
+    "src"
+  ]
 }
