@@ -2,9 +2,10 @@ import Ray from './ray';
 import Thing from './thing';
 import Color from './color';
 import Camera from './camera';
-import {toVector, Point, Vector} from './vector';
+import {Point} from './vector';
+import workerPool from 'workerpool';
 
-const SKY_COLOR = Color.multiply(new Color(0.5, 0.7, 1.0, 1.0), 0.6);
+const SKY_COLOR = Color.multiply(new Color(0.5, 0.7, 1.0, 1.0), 1);
 const LAND_COLOR = new Color(1,1, 1, 1);
 
 interface WorldParams {
@@ -21,6 +22,7 @@ export default class World {
     imageWidth: number;
     imageHeight: number;
     maxJump: number;
+    threadCount: number;
 
     constructor({things, background, imageWidth, imageHeight}: WorldParams) {
         this.things = things || [];
@@ -28,7 +30,8 @@ export default class World {
         this.camera = new Camera({aspectRatio: imageWidth / imageHeight});
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
-        this.maxJump = 5;
+        this.maxJump = 3;
+        this.threadCount = 6;
     }
 
     add(type: string, ...items: Thing[]): void {
@@ -56,60 +59,84 @@ export default class World {
         return {hitThing, hitPoint};
     }
 
+    tracePixel(row: number, col: number): Color {
+        const u = col / (this.imageWidth - 1);
+        const v = row / (this.imageHeight - 1);
+        let colorMask: Color = new Color(1,1, 1, 1);
+        let jump: number = 0;
+
+        let prevThing: Thing | null = null;
+        let ray: Ray = this.camera.getRay(u, v);
+        let hitThing: Thing | null = null;
+        let hitPoint: Point | null = null;
+
+        do {
+            const hitObj = this.findHitThing(ray, prevThing);
+            hitThing = hitObj.hitThing;
+            hitPoint = hitObj.hitPoint;
+            prevThing = hitThing;
+
+            if (hitThing && hitPoint) {
+                if (hitThing.isLight) {
+                    break;
+                } else {
+                    jump++;
+                    colorMask = colorMask.mask(hitThing.color);
+                    ray = hitThing.traceLine(ray, hitPoint);
+                }
+            }
+        } while(ray && jump < this.maxJump && hitThing);
+
+        if (jump >= this.maxJump || hitThing === null) {
+            const h = ray.vector.z;
+            const colorSum = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
+            const airColor: Color = new Color(colorSum.r, colorSum.g, colorSum.b, 1);
+            return colorMask.mask(airColor);
+        } else {
+            // hit thing is light
+            return colorMask.mask(hitThing.color);
+        }
+    }
+
     render() {
-        const maxJump: number = this.maxJump;
         const imageData: number[] = [];
 
         let count: number = 0;
         const startTime: Date = new Date();
+        // for (let thread = 0; thread < this.threadCount; thread++) {
+        //     for (let z = this.imageHeight - 1; z >= 0; z--) {
+        //         for (let x = 0; x < this.imageWidth; x++) {
+        //             const colors: Color[] = [];
+        //             for (let rand = 0; rand < 5; rand++) {
+        //                 const row = z + Math.random() - 0.5;
+        //                 const col = x + Math.random() - 0.5;
+        //                 const tempColor = this.tracePixel(row, col);
+        //                 colors.push(tempColor);
+        //                 // imageData.push(...pixelColor.toImageData());
+        //             }
+        //
+        //             const pixelColor = Color.average(...colors);
+        //             imageData.push(...pixelColor.toImageData());
+        //             // const pixelColor = this.tracePixel(z, x);
+        //             // imageData.push(...pixelColor.toImageData());
+        //         }
+        //     }
+        // }
         for (let z = this.imageHeight - 1; z >= 0; z--) {
             for (let x = 0; x < this.imageWidth; x++) {
-                const u = x / (this.imageWidth - 1);
-                const v = z / (this.imageHeight - 1);
-                let colorMask: Color = new Color(1,1, 1, 1);
-                let jump: number = 0;
-                count ++;
-
-                let prevThing: Thing | null = null;
-                let ray: Ray = this.camera.getRay(u, v);
-                let hitThing: Thing | null = null;
-                let hitPoint: Point | null = null;
-
-                do {
-                    const hitObj = this.findHitThing(ray, prevThing);
-                    hitThing = hitObj.hitThing;
-                    hitPoint = hitObj.hitPoint;
-                    prevThing = hitThing;
-
-                    if (hitThing && hitPoint) {
-                        if (hitThing.isLight) {
-                            // if (jump !== 0 && jump !== 5) {
-                            //     console.log('isLight');
-                            // }
-                            break;
-                        } else {
-                            jump++;
-                            colorMask = colorMask.mask(hitThing.color);
-                            ray = hitThing.traceLine(ray, hitPoint);
-                            // if (count % 500 === 0) {
-                            //     console.log(lights.length);
-                            // }
-                        }
-                    }
-                } while(ray && jump < maxJump && hitThing);
-
-                if (jump >= this.maxJump || hitThing === null) {
-                    const h = ray.vector.z;
-                    const airColor = Color.add(Color.multiply(SKY_COLOR, h), Color.multiply(LAND_COLOR, 1 - h));
-                    imageData.push(...colorMask.mask(airColor).toImageData());
-                } else {
-                    // hit thing is light
-                    const tempColor = colorMask.mask(hitThing.color);
-                    imageData.push(...tempColor.toImageData());
+                const colors: Color[] = [];
+                for (let rand = 0; rand < 20; rand++) {
+                    const row = z + Math.random() - 0.5;
+                    const col = x + Math.random() - 0.5;
+                    const tempColor = this.tracePixel(row, col);
+                    colors.push(tempColor);
+                    // imageData.push(...pixelColor.toImageData());
                 }
-                // if (jump !== 5 && jump !== 1) {
-                //     console.log('jump', jump);
-                // }
+
+                const pixelColor = Color.average(...colors);
+                imageData.push(...pixelColor.toImageData());
+                // const pixelColor = this.tracePixel(z, x);
+                // imageData.push(...pixelColor.toImageData());
             }
         }
         console.log(count, `Spend Time: ${(new Date().valueOf() - startTime.valueOf()) / 1000}s`);

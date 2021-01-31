@@ -12,7 +12,10 @@ export default class Color {
     }
 
     mask(m: Color): Color {
-        return new Color(this.r * m.r, this.g * m.g, this.b * m.b, this.a * m.a);
+        this.r *= m.r;
+        this.g *= m.g;
+        this.b *= m.b;
+        return this;
     }
 
     toImageData(): number[] {
@@ -23,7 +26,19 @@ export default class Color {
         return new Color(c.r * multiplier, c.g * multiplier, c.a * multiplier, c.a);
     }
 
-    static add(c1: Color, c2: Color): Color {
-        return new Color(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b, 1);
+    static add(...colors: Color[]): {r: number, g: number, b: number} {
+        const sumColor = {r: 0, g: 0, b: 0};
+        for (let color of colors) {
+            sumColor.r += color.r;
+            sumColor.g += color.g;
+            sumColor.b += color.b;
+        }
+        return sumColor;
+    }
+
+    static average(...colors: Color[]): Color {
+        const len = colors.length;
+        const sumColor: {r: number, g: number, b: number} = Color.add(...colors);
+        return new Color(sumColor.r / len, sumColor.g / len, sumColor.b / len, 1);
     }
 }

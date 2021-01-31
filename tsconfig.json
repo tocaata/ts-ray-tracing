@@ -9,5 +9,6 @@
     "module": "es2015",
     "moduleResolution": "node",
     "isolatedModules": true
-  }
+  },
+  "noImplicitAny": false
 }

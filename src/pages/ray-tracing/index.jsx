@@ -3,7 +3,7 @@ import World from '../../lib/world';
 import things from '../../lib/things';
 import Panel from '../../components/panel';
 
-const canvasWidth = 1280 * 2, canvasHeight = 720 * 2;
+const canvasWidth = 1280, canvasHeight = 720;
 
 export default class RayTracing extends React.Component {
     constructor(props) {
