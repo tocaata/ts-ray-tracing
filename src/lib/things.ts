@@ -4,7 +4,7 @@ import Triangle from './triangle';
 import Sphere from './sphere';
 import Color from './color';
 
-export default {
+const things = {
     room: [
         // new Triangle(
         //     {x: 6000, y: 6000, z: 0},
@@ -96,7 +96,7 @@ export default {
         new DiffuseSphere(
             {x: -200, y: 300, z: 0},
             60,
-            0.8,
+            1,
             new Color(0.5, 0.5, 0.5, 1),
             false
         ),
@@ -148,3 +148,5 @@ export default {
         // )
     ]
 };
+
+export default things;

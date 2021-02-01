@@ -64,7 +64,7 @@ export function vectorLength(v1: Vector): number {
     return Math.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
 }
 
-export default {
+const v3 = {
     normalize,
     dot,
     cross,
@@ -74,3 +74,5 @@ export default {
     toVector,
     vectorLength
 };
+
+export default v3;

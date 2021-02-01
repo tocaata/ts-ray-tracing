@@ -23,7 +23,7 @@ export class RayTracing {
         for (let z = rowTo - 1; z >= rowFrom; z--) {
             for (let x = 0; x < this.world.imageWidth; x++) {
                 const colors = [];
-                for (let rand = 0; rand < 5; rand++) {
+                for (let rand = 0; rand < 20; rand++) {
                     const row = z + Math.random() - 0.5;
                     const col = x + Math.random() - 0.5;
                     const tempColor = this.world.tracePixel(row, col);
