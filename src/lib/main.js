@@ -3,7 +3,7 @@ import RayWorker from './ray-tracing.worker';
 const canvasWidth = 1280 * 2, canvasHeight = 720 * 2;
 
 export default class MainJob {
-    threadCount = 6;
+    threadCount = 8;
     imageHeight = canvasHeight;
     imageWidth = canvasWidth;
     rayWorkers = [];
