@@ -3,10 +3,6 @@ import Thing from './thing';
 import Color from './color';
 import Camera from './camera';
 import {Point} from './vector';
-// @ts-ignore
-import * as Parallel from 'paralleljs';
-
-// const Parallel: any = require('paralleljs')
 
 const SKY_COLOR = Color.multiply(new Color(0.5, 0.7, 1.0, 1.0), 1);
 const LAND_COLOR = new Color(1,1, 1, 1);
@@ -112,13 +108,13 @@ export default class World {
             taskData.push({from, to: to < this.imageHeight ? to : this.imageHeight});
         }
 
-        const task = new Parallel(taskData);
+        // const task = new Parallel(taskData);
 
-        task.map((scope: any) => {
-            return World.renderTask(this, scope.from, scope.to);
-        }).then((data: any[]) => {
-            console.log(data.length);
-        });
+        // task.map((scope: any) => {
+        //     return World.renderTask(this, scope.from, scope.to);
+        // }).then((data: any[]) => {
+        //     console.log(data.length);
+        // });
     }
 
     render() {
