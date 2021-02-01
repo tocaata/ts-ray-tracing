@@ -32,8 +32,8 @@ export default class RayTracing extends React.Component {
             }
             ctx.putImageData(imgData, 0, 0);
             console.log(`Spend Time: ${(new Date().valueOf() - startTime.valueOf()) / 1000}s`);
+            main.cleanWorkers().then(() => console.log('all workers are closed.'));
         });
-
         // this.space.add('things', ...things.room);
         // this.world.add('things', ...things.thing);
         // this.world.add('things', ...things.ball);

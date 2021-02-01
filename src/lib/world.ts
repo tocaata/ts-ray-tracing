@@ -102,8 +102,8 @@ export default class World {
     }
 
     renderWithThread() {
-        let count: number = 0;
-        const startTime: Date = new Date();
+        // let count: number = 0;
+        // const startTime: Date = new Date();
 
         const taskData: {from: number, to: number}[] = [];
         for (let thread = 0; thread < this.threadCount; thread++) {

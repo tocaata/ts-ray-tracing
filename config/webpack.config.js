@@ -386,6 +386,15 @@ module.exports = function (webpackEnv) {
                 name: 'static/media/[name].[hash:8].[ext]',
               },
             },
+            {
+              test: /\.worker\.(js|ts)$/i,
+              use: [{
+                loader: 'comlink-loader',
+                options: {
+                  singleton: false
+                }
+              }]
+            },
             // Process application JS with Babel.
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
@@ -429,15 +438,6 @@ module.exports = function (webpackEnv) {
                 cacheCompression: false,
                 compact: isEnvProduction,
               },
-            },
-            {
-              test: /\.worker\.(js|ts)$/i,
-              use: [{
-                loader: 'comlink-loader',
-                options: {
-                  multiple: 4
-                }
-              }]
             },
             // Process any JS outside of the app with Babel.
             // Unlike the application JS, we only compile the standard ES features.

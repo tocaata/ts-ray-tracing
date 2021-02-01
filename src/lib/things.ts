@@ -1,5 +1,5 @@
 import DiffuseSphere from './diffuse-sphere';
-import DiffuseTriangle from './diffuse-triangle';
+// import DiffuseTriangle from './diffuse-triangle';
 import Triangle from './triangle';
 import Sphere from './sphere';
 import Color from './color';

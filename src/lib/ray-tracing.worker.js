@@ -1,12 +1,10 @@
+import Color from './color';
 import World from '../lib/world';
 import things from '../lib/things';
-import Color from './color';
 
 const canvasWidth = 1280 * 2, canvasHeight = 720 * 2;
 
-export default class RayTracing {
-    world = null;
-
+export class RayTracing {
     constructor() {
         this.world = new World({
             things: [],
@@ -22,7 +20,7 @@ export default class RayTracing {
     async renderRow(rowFrom, rowTo) {
         const imageData = [];
 
-        for (let z = rowFrom; z < rowTo; z++) {
+        for (let z = rowTo - 1; z >= rowFrom; z--) {
             for (let x = 0; x < this.world.imageWidth; x++) {
                 const colors = [];
                 for (let rand = 0; rand < 5; rand++) {
@@ -36,6 +34,12 @@ export default class RayTracing {
                 imageData.push(...pixelColor.toImageData());
             }
         }
+
         return imageData;
     }
+}
+
+export function close() {
+    // eslint-disable-next-line no-restricted-globals
+    return self.close();
 }
