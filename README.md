@@ -10,14 +10,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Change max web worker count
 
-Open File src/lib/main.js. Change threadCount in class MainJob to the number you expect.
+Open the File src/lib/main.js. Change threadCount in class MainJob to your expected number.
 
 ## Add the ball or triangle to the world in ray tracing engine.
 
-please edit src/lib/things.ts.
-Add balls to the ball of things. Add trangles to the trangle of things.
-Then run the app again.
-open the site: http://localhost:3000.
+Please edit src/lib/things.ts.
+Add the balls to the ball of things. Add the triangles to the triangle of things.
+Then run the app again and open the site: http://localhost:3000.
 
 In the project directory, you can run:
 
